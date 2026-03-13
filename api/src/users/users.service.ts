@@ -27,7 +27,7 @@ export class UsersService {
 
   async findOne(id: number) {
     const user = await this.prisma.user.findUnique({
-      where: { id },
+      where: { id: id },
       select: {
         id: true,
         nome: true,

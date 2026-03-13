@@ -6,7 +6,10 @@ import {
   Param,
   Patch,
   Post,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express/multer/interceptors/file.interceptor';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
 import { ReviewsService } from './reviews.service';
@@ -16,8 +19,12 @@ export class ReviewsController {
   constructor(private readonly reviewsService: ReviewsService) {}
 
   @Post()
-  create(@Body() createReviewDto: CreateReviewDto) {
-    return this.reviewsService.create(createReviewDto);
+  @UseInterceptors(FileInterceptor('image'))
+  create(
+    @Body() createReviewDto: CreateReviewDto,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    return this.reviewsService.create(createReviewDto, file);
   }
 
   @Get()

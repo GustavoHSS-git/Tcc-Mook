@@ -12,4 +12,7 @@ export class CreateReviewDto {
   @IsString({ message: 'ID do usuário deve ser uma string' })
   @IsNotEmpty({ message: 'ID do usuário é obrigatório' })
   userId: number;
+
+  @IsString({ message: 'URL da imagem deve ser uma string' })
+  image?: string;
 }

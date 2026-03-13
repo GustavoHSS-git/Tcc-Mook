@@ -1,4 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
+import { UploadService } from 'cloudinary/upload-file.service';
 import { PrismaService } from 'database/prisma.service';
 import { UsersService } from 'src/users/users.service';
 import { CreateReviewDto } from './dto/create-review.dto';
@@ -9,9 +10,10 @@ export class ReviewsService {
   constructor(
     private prisma: PrismaService,
     private usuarioService: UsersService,
+    private uploadService: UploadService,
   ) {}
 
-  async create(createReviewDto: CreateReviewDto) {
+  async create(createReviewDto: CreateReviewDto, file?: Express.Multer.File) {
     if (
       !createReviewDto.nota &&
       !createReviewDto.comentario &&
@@ -20,17 +22,24 @@ export class ReviewsService {
       throw new BadRequestException('Todos os campos são obrigatórios');
     }
 
-    const userId = await this.usuarioService.findOne(createReviewDto.userId);
+    // const userId = await this.usuarioService.findOne(createReviewDto.userId);
 
-    if (!userId) {
-      throw new BadRequestException('Usuário não encontrado');
+    // if (!userId) {
+    //   throw new BadRequestException('Usuário não encontrado');
+    // }
+
+    let imageUrl: string | undefined;
+    if (file) {
+      const result = await this.uploadService.uploadImage(file);
+      imageUrl = result.url;
     }
 
     return this.prisma.reviews.create({
       data: {
         nota: createReviewDto.nota,
         comentario: createReviewDto.comentario,
-        userId: createReviewDto.userId,
+        userId: Number(createReviewDto.userId),
+        imageUrl,
       },
     });
   }
