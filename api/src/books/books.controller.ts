@@ -10,11 +10,13 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { ApiTags } from '@nestjs/swagger';
 import { ApiOperation } from '@nestjs/swagger/dist/decorators/api-operation.decorator';
 import { BooksService } from './books.service';
 import { CreateBookDto } from './dto/create-book.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
 
+@ApiTags('Books')
 @Controller('books')
 export class BooksController {
   constructor(private readonly booksService: BooksService) {}
