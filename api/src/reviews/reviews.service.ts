@@ -1,18 +1,36 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'database/prisma.service';
+import { UsersService } from 'src/users/users.service';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
 
 @Injectable()
 export class ReviewsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private usuarioService: UsersService,
+  ) {}
 
-  create(createReviewDto: CreateReviewDto) {
-    // Ensure 'user' property is included as required by ReviewsCreateInput
+  async create(createReviewDto: CreateReviewDto) {
+    if (
+      !createReviewDto.nota &&
+      !createReviewDto.comentario &&
+      !createReviewDto.userId
+    ) {
+      throw new BadRequestException('Todos os campos são obrigatórios');
+    }
+
+    const userId = await this.usuarioService.findOne(createReviewDto.userId);
+
+    if (!userId) {
+      throw new BadRequestException('Usuário não encontrado');
+    }
+
     return this.prisma.reviews.create({
       data: {
-        ...createReviewDto,
-        user: { connect: { id: createReviewDto.usuarioId } },
+        nota: createReviewDto.nota,
+        comentario: createReviewDto.comentario,
+        userId: createReviewDto.userId,
       },
     });
   }

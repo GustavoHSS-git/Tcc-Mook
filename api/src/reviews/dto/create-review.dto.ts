@@ -11,5 +11,5 @@ export class CreateReviewDto {
 
   @IsString({ message: 'ID do usuário deve ser uma string' })
   @IsNotEmpty({ message: 'ID do usuário é obrigatório' })
-  usuarioId: number;
+  userId: number;
 }
