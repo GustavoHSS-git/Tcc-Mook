@@ -17,6 +17,7 @@ model User {
   createdAt DateTime @default(now())
 
   reviews   Reviews[]
+  loans     Loan[]
 }
 
 model Reviews {
@@ -28,4 +29,53 @@ model Reviews {
 
   userId     Int
   user       User     @relation(fields: [userId], references: [id])
+
+  bookId     Int
+  book       Book     @relation(fields: [bookId], references: [id])
+}
+
+model Author {
+  id     Int    @id @default(autoincrement())
+  nome   String
+
+  books  Book[]
+}
+
+model Category {
+  id    Int    @id @default(autoincrement())
+  nome  String
+
+  books Book[]
+}
+
+model Book {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String?
+  isbn        String?  @unique
+  imageUrl    String?
+  quantity    Int      @default(1)
+  createdAt   DateTime @default(now())
+
+  authorId    Int
+  author      Author   @relation(fields: [authorId], references: [id])
+
+  categoryId  Int
+  category    Category @relation(fields: [categoryId], references: [id])
+
+  reviews     Reviews[]
+  loans       Loan[]
+}
+
+model Loan {
+  id          Int      @id @default(autoincrement())
+  loanDate    DateTime @default(now())
+  returnDate  DateTime?
+  returned    Boolean  @default(false)
+
+  userId      Int
+  user        User     @relation(fields: [userId], references: [id])
+
+  bookId      Int
+  book        Book     @relation(fields: [bookId], references: [id])
 }

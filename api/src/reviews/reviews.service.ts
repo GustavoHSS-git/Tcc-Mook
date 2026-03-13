@@ -1,7 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { UploadService } from 'cloudinary/upload-file.service';
 import { PrismaService } from 'database/prisma.service';
-import { UsersService } from 'src/users/users.service';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
 
@@ -9,7 +8,6 @@ import { UpdateReviewDto } from './dto/update-review.dto';
 export class ReviewsService {
   constructor(
     private prisma: PrismaService,
-    private usuarioService: UsersService,
     private uploadService: UploadService,
   ) {}
 
@@ -17,7 +15,8 @@ export class ReviewsService {
     if (
       !createReviewDto.nota &&
       !createReviewDto.comentario &&
-      !createReviewDto.userId
+      !createReviewDto.userId &&
+      !createReviewDto.bookId
     ) {
       throw new BadRequestException('Todos os campos são obrigatórios');
     }
@@ -39,6 +38,7 @@ export class ReviewsService {
         nota: createReviewDto.nota,
         comentario: createReviewDto.comentario,
         userId: Number(createReviewDto.userId),
+        bookId: Number(createReviewDto.bookId),
         imageUrl,
       },
     });
